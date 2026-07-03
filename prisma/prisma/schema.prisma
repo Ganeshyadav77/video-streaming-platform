@@ -1,0 +1,34 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  username      String    @unique
+  passwordHash  String
+  avatarUrl     String?
+  createdAt     DateTime  @default(now())
+  videos        Video[]
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  videoUrl    String?
+  thumbnail   String?
+  status      String   @default("PROCESSING") // PROCESSING, READY, FAILED
+  views       Int      @default(0)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
